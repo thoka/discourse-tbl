@@ -1,0 +1,9 @@
+{
+  "name": "discourse-tbl",
+  "private": true,
+  "license": "GPL-2.0-only",
+  "type": "module",
+  "devDependencies": {
+    "tbl-md": "0.3.0"
+  }
+}

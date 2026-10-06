@@ -1,0 +1,21 @@
+# Git hooks for every writer: humans and agents.
+# Install: mise run hooks-install
+pre-commit:
+  # Run the jobs in order, and stop at the first failure.
+  piped: true
+  jobs:
+    - name: install
+      run: mise exec -- bun install --frozen-lockfile --silent
+    - name: public-check
+      # The repository is public (AGENTS.md): no local path and no private project name in a staged file.
+      # A contributor without public-check on the PATH gets a note, and the hook passes.
+      run: if command -v public-check >/dev/null 2>&1; then public-check {staged_files}; else echo "public-check not found, skipped"; fi
+    - name: tbl-md lint
+      # Fails on a GFM pipe table and on an invalid tbl block in a staged Markdown file (AGENTS.md).
+      glob: "*.md"
+      run: mise exec -- bunx tbl-md lint --max-warnings 0 {staged_files}
+pre-push:
+  jobs:
+    - name: test
+      # The tests run locally before each push, not as CI runs on GitHub.
+      run: mise run test

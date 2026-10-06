@@ -1,0 +1,21 @@
+[tools]
+bun = "1.4.2"
+lefthook = "2.1.16"
+
+[tasks.install]
+description = "Install the dependencies from bun.lock"
+run = "bun install --frozen-lockfile"
+
+[tasks.test]
+description = "Run all tests that run without Docker"
+depends = ["install"]
+run = "bun test"
+
+[tasks.hooks-install]
+description = "Install the git hooks of lefthook.yml (pre-commit: public-check and tbl-md lint, pre-push: mise run test)"
+run = "lefthook install"
+
+[tasks.lint-md]
+description = "Run tbl-md lint on all Markdown files of the repository"
+depends = ["install"]
+run = "git ls-files -z '*.md' | xargs -0 bunx tbl-md lint --max-warnings 0"
