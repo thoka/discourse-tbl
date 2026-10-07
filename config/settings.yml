@@ -1,0 +1,4 @@
+plugins:
+  tbl_enabled:
+    default: true
+    client: true
