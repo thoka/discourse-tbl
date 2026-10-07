@@ -34,6 +34,19 @@ mise run hooks-install
 mise run test
 ```
 
+## Development instance
+
+The Discourse tests run in a Discourse development instance in Docker. The script `bin/dev-instance` drives it.
+
+Run `bin/dev-instance check` first. It makes sure that Docker works for your session. If it fails, it prints the cause and exits with a code. `bin/dev-instance help` lists the codes.
+
+The file `dev/discourse.env` pins the Discourse version of the instance:
+
+- `DISCOURSE_DEV_IMAGE` is the image `discourse/discourse_dev` with a dated tag, never `release`.
+- `DISCOURSE_COMMIT` is the commit of Discourse that the instance uses.
+
+To move to a new Discourse version, change both lines in one commit.
+
 ## License
 
 GPL-2.0-only, as Discourse. See `LICENSE`.
