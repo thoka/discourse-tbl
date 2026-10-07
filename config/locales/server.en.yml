@@ -1,0 +1,3 @@
+en:
+  site_settings:
+    tbl_enabled: "Render a tbl block in a post as a table."
