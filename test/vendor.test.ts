@@ -61,14 +61,8 @@ test("the vendored file defines tblMdMarkdownIt.default as a function", () => {
 });
 
 test("the vendored plugin renders a tbl block as a table with markdown-it", async () => {
-  // markdown-it is a dependency of tbl-md, so bun installs it into node_modules. If it is not there, this check
-  // has nothing to run with, and the test ends here.
-  let markdownit: (options?: object) => any;
-  try {
-    markdownit = (await import("markdown-it")).default;
-  } catch {
-    return;
-  }
+  // markdown-it is a dependency of tbl-md, so bun installs it into node_modules. A missing markdown-it fails the test.
+  const markdownit = (await import("markdown-it")).default;
   const md = markdownit().use(runVendored().tblMdMarkdownIt.default);
   const html: string = md.render("```tbl\nname: Name\nrole: Role\n--\nname: Ada\nrole: Engineer\n```\n");
   expect(html).toContain("<table");
