@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Starts and drives a Discourse development instance for the tests of this plugin.
+# The pins of the image and the core commit are in dev/discourse.env.
+# Besides bash, the command check runs only docker, getent, and id. The tests rely on this.
+set -euo pipefail
+
+usage() {
+  local text
+  IFS= read -r -d '' text <<'USAGE' || true
+Usage: bin/dev-instance <command>
+
+Commands:
+  check   Make sure that Docker works for this session.
+  help    Show this text.
+
+Exit codes:
+  0  Success.
+  2  Unknown command or wrong arguments.
+  3  The user is in the group docker, but this session does not have the group yet.
+     Log in again or start a new session.
+  4  The command docker is not installed.
+  5  docker info fails for another reason, for example the Docker daemon does not run.
+USAGE
+  printf '%s' "$text"
+}
+
+fail() {
+  local code=$1
+  shift
+  echo "dev-instance: $*" >&2
+  exit "$code"
+}
+
+cmd_check() {
+  command -v docker >/dev/null 2>&1 || fail 4 "the command docker is not installed."
+  local output
+  if output=$(docker info 2>&1); then
+    echo "dev-instance: docker works."
+    return 0
+  fi
+  local user entry members
+  user=$(id -un)
+  # getent prints name:password:gid:members, with the members separated by commas.
+  entry=$(getent group docker 2>/dev/null || true)
+  members=${entry##*:}
+  if [[ ",$members," == *",$user,"* ]] && ! [[ " $(id -nG) " == *" docker "* ]]; then
+    fail 3 "the user $user is in the group docker, but this session does not have the group yet. Log in again or start a new session."
+  fi
+  fail 5 "docker info failed: $output"
+}
+
+if [[ $# -eq 0 ]]; then
+  usage >&2
+  exit 2
+fi
+
+case "$1" in
+  check)
+    [[ $# -eq 1 ]] || fail 2 "check takes no arguments."
+    cmd_check
+    ;;
+  help | -h | --help)
+    usage
+    ;;
+  *)
+    echo "dev-instance: unknown command: $1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
