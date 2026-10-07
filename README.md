@@ -34,6 +34,18 @@ mise run hooks-install
 mise run test
 ```
 
+## Update tbl-md
+
+The plugin bundles the markdown-it plugin of tbl-md as one file, `assets/vendor/javascripts/tbl-md-markdown-it.js`. The script `scripts/vendor-tbl-md.ts` copies it from the npm package and adds a header with the version and the MIT notice of tbl-md. Do not edit the file by hand.
+
+To move to a new version of tbl-md:
+
+1. Change the version of `tbl-md` in `package.json`. Use an exact version, with no `^` or `~`.
+2. Run `bun install` to update `bun.lock`, then `mise run install`.
+3. Run `mise run vendor`. It writes the new file.
+4. Run `mise run test`. If the file and the pinned version differ, the test `test/vendor.test.ts` fails.
+5. Commit `package.json`, `bun.lock`, and the new file together.
+
 ## Development instance
 
 The Discourse tests run in a Discourse development instance in Docker. The script `bin/dev-instance` drives it.
