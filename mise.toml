@@ -19,3 +19,8 @@ run = "lefthook install"
 description = "Run tbl-md lint on all Markdown files of the repository"
 depends = ["install"]
 run = "git ls-files -z '*.md' | xargs -0 bunx tbl-md lint --max-warnings 0"
+
+[tasks.vendor]
+description = "Copy the markdown-it plugin of tbl-md from node_modules into assets/vendor/javascripts/"
+depends = ["install"]
+run = "bun scripts/vendor-tbl-md.ts"
